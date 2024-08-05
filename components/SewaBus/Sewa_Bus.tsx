@@ -1,6 +1,5 @@
 "use client";
-import React from "react";
-import { useState, SyntheticEvent } from "react";
+import React, { useState, useEffect, SyntheticEvent } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -15,7 +14,7 @@ type Data_bus = {
   jenis_bus: JenisBus;
 };
 
-const SewaBus = ({ bus }: { bus: Data_bus[] }) => {
+const SewaBus = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [nama, setNama] = useState("");
   const [noTelepon, setNoTelepon] = useState("");
@@ -23,10 +22,29 @@ const SewaBus = ({ bus }: { bus: Data_bus[] }) => {
   const [idBus, setIdBus] = useState("");
   const [tanggal_sewa, setTanggalSewa] = useState("");
   const [tanggal_kembali, setTanggalKembali] = useState("");
+  const [bus, setBus] = useState<Data_bus[]>([]);
   const router = useRouter();
+
+  const fetchBus = async () => {
+    try {
+      const response = await axios.get("/api/bus");
+      setBus(response.data);
+    } catch (error) {
+      console.error("Failed to fetch bus data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchBus();
+  }, []);
+
   const handleModal = () => {
     setIsOpen(!isOpen);
+    if (!isOpen) {
+      fetchBus(); // Refresh bus data when opening the modal
+    }
   };
+
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     const data = {
@@ -54,6 +72,7 @@ const SewaBus = ({ bus }: { bus: Data_bus[] }) => {
         icon: "success",
         confirmButtonText: "Ok",
       });
+      fetchBus(); // Refresh bus data after adding a new bus
       router.refresh();
       setIsOpen(false);
     } catch (error: any) {
@@ -74,6 +93,7 @@ const SewaBus = ({ bus }: { bus: Data_bus[] }) => {
       }
     }
   };
+
   return (
     <div>
       <button className="btn" onClick={handleModal}>
