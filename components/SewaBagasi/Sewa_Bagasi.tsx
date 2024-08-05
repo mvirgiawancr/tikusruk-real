@@ -151,7 +151,7 @@ const SewaBagasi = () => {
                 <input
                   type="number"
                   value={berat}
-                  onChange={(e) => setBerat(e.target.value)}
+                  onChange={(e) => setBerat(Number(e.target.value))}
                   className="input input-bordered"
                   placeholder="Berat"
                 />
