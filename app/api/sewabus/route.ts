@@ -10,6 +10,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Semua field harus diisi' }, { status: 400 });
     }
 
+    console.log("Request Body:", { id_petugas, nama, no_telepon, alamat, plat_bus, tanggal_sewa, tanggal_kembali });
+
     // Check if the bus is already booked for the given date range
     const existingBooking = await prisma.sewa_bus.findFirst({
       where: {
@@ -34,11 +36,11 @@ export async function POST(req: Request) {
     // Find bus ID by plat_bus
     const bus = await prisma.data_bus.findMany({
       where: {
-          plat_bus: plat_bus,
+        plat_bus: plat_bus,
       },
-  });
+    });
 
-    if (!bus) {
+    if (bus.length === 0) {
       return NextResponse.json({ error: 'Bus tidak ditemukan' }, { status: 404 });
     }
 
@@ -62,16 +64,25 @@ export async function POST(req: Request) {
       },
     });
 
+    console.log("New Booking Created:", newBooking);
+
     return NextResponse.json(newBooking, { status: 201 });
   } catch (error) {
     console.error('Error creating booking:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
 export async function GET() {
   try {
     // Fetch semua sewa_bus
-    const sewa_bus = await prisma.sewa_bus.findMany();
+    const sewa_bus = await prisma.sewa_bus.findMany({
+      include: {
+        pelanggan: true, // Include pelanggan data
+        petugas: true, // Include petugas data
+      },
+    });
+    console.log("Data Sewa Bus:", sewa_bus);
     return NextResponse.json(sewa_bus);
   } catch (error) {
     console.error(error);
