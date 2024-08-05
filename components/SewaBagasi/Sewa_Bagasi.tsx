@@ -27,16 +27,19 @@ const SewaBagasi = ({ bus }: { bus: Data_bus[] }) => {
     setIsOpen(!isOpen);
   };
   const handleSubmit = async (e: SyntheticEvent) => {
+    e.preventDefault();
+    const data = {
+      id_petugas: localStorage.getItem("petugasId"),
+      nama: nama,
+      no_telepon: noTelepon,
+      alamat: alamat,
+      plat_bus: plat_bus,
+      berat: Number(berat),
+    };
+    console.log("Submitting Data:", data); // Log data yang dikirim
     try {
-      e.preventDefault();
-      await axios.post("/api/sewabagasi", {
-        id_petugas: localStorage.getItem("petugasId"),
-        nama: nama,
-        no_telepon: noTelepon,
-        alamat: alamat,
-        plat_bus: plat_bus,
-        berat: Number(berat),
-      });
+      await axios.post("/api/sewabagasi", data);
+
       setNama("");
       setNoTelepon("");
       setAlamat("");
@@ -68,7 +71,6 @@ const SewaBagasi = ({ bus }: { bus: Data_bus[] }) => {
       }
     }
   };
-
   return (
     <div>
       <button className="btn" onClick={handleModal}>
