@@ -1,6 +1,5 @@
 "use client";
-import React from "react";
-import { useState, SyntheticEvent } from "react";
+import React, { useState, useEffect, SyntheticEvent } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -15,17 +14,36 @@ type Data_bus = {
   jenis_bus: JenisBus;
 };
 
-const SewaBagasi = ({ bus }: { bus: Data_bus[] }) => {
+const SewaBagasi = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [nama, setNama] = useState("");
   const [noTelepon, setNoTelepon] = useState("");
   const [alamat, setAlamat] = useState("");
-  const [plat_bus, setPlatBus] = useState("");
-  const [berat, setBerat] = useState("");
+  const [platBus, setPlatBus] = useState("");
+  const [berat, setBerat] = useState<number | "">("");
+  const [bus, setBus] = useState<Data_bus[]>([]);
   const router = useRouter();
+
+  const fetchBus = async () => {
+    try {
+      const response = await axios.get("/api/bus");
+      setBus(response.data);
+    } catch (error) {
+      console.error("Failed to fetch bus data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchBus();
+  }, []);
+
   const handleModal = () => {
     setIsOpen(!isOpen);
+    if (!isOpen) {
+      fetchBus(); // Refresh bus data when opening the modal
+    }
   };
+
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     const data = {
@@ -33,7 +51,7 @@ const SewaBagasi = ({ bus }: { bus: Data_bus[] }) => {
       nama: nama,
       no_telepon: noTelepon,
       alamat: alamat,
-      plat_bus: plat_bus,
+      plat_bus: platBus,
       berat: Number(berat),
     };
     console.log("Submitting Data:", data); // Log data yang dikirim
@@ -51,6 +69,7 @@ const SewaBagasi = ({ bus }: { bus: Data_bus[] }) => {
         icon: "success",
         confirmButtonText: "Ok",
       });
+      fetchBus(); // Refresh bus data after adding a new bus
       router.refresh();
       setIsOpen(false);
     } catch (error: any) {
@@ -71,6 +90,7 @@ const SewaBagasi = ({ bus }: { bus: Data_bus[] }) => {
       }
     }
   };
+
   return (
     <div>
       <button className="btn" onClick={handleModal}>
@@ -110,28 +130,26 @@ const SewaBagasi = ({ bus }: { bus: Data_bus[] }) => {
                 placeholder="Alamat"
               />
             </div>
-            <div className="form-control w-1/3">
+            <div className="form-control w-full">
               <label className="label font-bold">Bus</label>
               <select
                 className="select select-bordered"
-                value={plat_bus}
+                value={platBus}
                 onChange={(e) => setPlatBus(e.target.value)}
               >
                 <option value="" disabled>
                   Pilih Bus
                 </option>
-                {bus
-                  .filter((bus) => bus.jenis_bus === JenisBus.Akap)
-                  .map((bus) => (
-                    <option value={bus.plat_bus} key={bus.plat_bus}>
-                      {bus.plat_bus}
-                    </option>
-                  ))}
+                {bus.map((bus) => (
+                  <option value={bus.plat_bus} key={bus.plat_bus}>
+                    {bus.plat_bus}
+                  </option>
+                ))}
               </select>
               <div className="form-control w-full">
                 <label className="label font-bold">Berat</label>
                 <input
-                  type="text"
+                  type="number"
                   value={berat}
                   onChange={(e) => setBerat(e.target.value)}
                   className="input input-bordered"
