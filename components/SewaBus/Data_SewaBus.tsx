@@ -1,4 +1,3 @@
-// Data_SewaBus.client.tsx
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
@@ -29,13 +28,14 @@ const Data_SewaBus: React.FC = () => {
   useEffect(() => {
     async function fetchSewaBus() {
       try {
-        const response = await fetch("/api/sewa-bus", {
+        const response = await fetch("/api/sewabus", {
           method: "GET",
         });
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
         const data: SewaBus[] = await response.json();
+        console.log("Fetched Data:", data); // Log data yang diterima dari API
         setSewaBus(data);
       } catch (error) {
         console.error("Failed to fetch:", error);
@@ -71,8 +71,10 @@ const Data_SewaBus: React.FC = () => {
               <tr key={index}>
                 <td>{data.id_sewa_bus}</td>
                 <td>{data.id_bus}</td>
-                <td>{data.pelanggan?.nama || "Tidak Diketahui"}</td>
-                <td>{data.petugas?.nama || "Tidak Diketahui"}</td>
+                <td>{data.pelanggan ? data.pelanggan.nama : "N/A"}</td>{" "}
+                {/* Pastikan data pelanggan ada */}
+                <td>{data.petugas ? data.petugas.nama : "N/A"}</td>{" "}
+                {/* Pastikan data petugas ada */}
                 <td>{new Date(data.tanggal_sewa).toLocaleDateString()}</td>
                 <td>{new Date(data.tanggal_kembali).toLocaleDateString()}</td>
                 <td>
