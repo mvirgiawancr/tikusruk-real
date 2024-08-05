@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum jenis_bus {
+  Pariwisata
+  Akap
+}
+
+model Pelanggan {
+  id_pelanggan Int           @id @default(autoincrement())
+  nama         String        @db.VarChar(30)
+  no_telepon   String        @db.VarChar(12)
+  alamat       String        @db.VarChar(50)
+  tiket        Tiket[]
+  Sewa_bus     Sewa_bus[]
+  Sewa_Bagasi  Sewa_Bagasi[]
+}
+
+model Petugas {
+  id_petugas  Int           @id @default(autoincrement())
+  nama        String        @db.VarChar(30)
+  posisi      String        @db.VarChar(10)
+  no_telepon  String        @db.VarChar(12)
+  tiket       Tiket[]
+  Sewa_bus    Sewa_bus[]
+  Sewa_Bagasi Sewa_Bagasi[]
+}
+
+model Data_bus {
+  id_bus            Int           @id @default(autoincrement())
+  kapasitas_bagasi  Int
+  jumlah_kursi      Int
+  kelas             String        @db.VarChar(10)
+  harga_sewa_bus    Int
+  harga_sewa_bagasi Int
+  harga_tiket       Int
+  jenis_bus         jenis_bus
+  kota_tujuan       String        @db.VarChar(10)
+  kota_asal         String        @db.VarChar(10)
+  plat_bus          String        @db.VarChar(9)
+  Sewa_bus          Sewa_bus[]
+  Tiket             Tiket[]
+  Sewa_Bagasi       Sewa_Bagasi[]
+}
+
+model Tiket {
+  id_tiket     Int        @id @default(autoincrement())
+  no_kursi     Int
+  kelas        String     @db.VarChar(10)
+  pelanggan    Pelanggan? @relation(fields: [id_pelanggan], references: [id_pelanggan])
+  id_pelanggan Int?
+  petugas      Petugas?   @relation(fields: [id_petugas], references: [id_petugas])
+  id_petugas   Int?
+  data_bus     Data_bus?  @relation(fields: [id_bus], references: [id_bus])
+  id_bus       Int?
+}
+
+model Sewa_bus {
+  id_sewa_bus     Int        @id @default(autoincrement())
+  tanggal_sewa    DateTime   @db.Date
+  tanggal_kembali DateTime   @db.Date
+  plat_bus        String     @db.VarChar(9)
+  data_bus        Data_bus?  @relation(fields: [id_bus], references: [id_bus])
+  id_bus          Int?
+  pelanggan       Pelanggan? @relation(fields: [id_pelanggan], references: [id_pelanggan])
+  id_pelanggan    Int?
+  petugas         Petugas?   @relation(fields: [id_petugas], references: [id_petugas])
+  id_petugas      Int?
+}
+
+model Sewa_Bagasi {
+  id_sewa_bagasi Int        @id @default(autoincrement())
+  berat          Int
+  data_bus       Data_bus?  @relation(fields: [id_bus], references: [id_bus])
+  id_bus         Int?
+  pelanggan      Pelanggan? @relation(fields: [id_pelanggan], references: [id_pelanggan])
+  id_pelanggan   Int?
+  petugas        Petugas?   @relation(fields: [id_petugas], references: [id_petugas])
+  id_petugas     Int?
+}
