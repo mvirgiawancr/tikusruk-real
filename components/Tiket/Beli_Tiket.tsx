@@ -30,14 +30,16 @@ const BeliTiket = ({ bus }: { bus: Data_bus[] }) => {
   const handleSubmit = async (e: SyntheticEvent) => {
     try {
       e.preventDefault();
-      const response = await axios.post("/api/tiket", {
+      const data = {
         id_petugas: localStorage.getItem("petugasId"),
         nama: nama,
         no_telepon: noTelepon,
         alamat: alamat,
         plat_bus: plat_bus, // Kirimkan plat_bus
         kursi: Number(kursi),
-      });
+      };
+      console.log("Submitting Data:", data); // Log data yang dikirim
+      const response = await axios.post("/api/tiket", data);
 
       if (response.status === 201) {
         setNama("");
