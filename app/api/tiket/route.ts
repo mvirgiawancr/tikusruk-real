@@ -11,7 +11,7 @@ export const POST = async (request: Request) => {
         const noTelepon = body.no_telepon;
         const alamat = body.alamat;
         const id_petugas = body.id_petugas;
-
+        console.log("Request Body:", body); // Log data yang diterima
         // Validasi input
         if (!platBus || !noKursi || !nama || !noTelepon || !alamat) {
             return NextResponse.json({ error: "Semua field harus diisi" }, { status: 400 });
@@ -72,24 +72,33 @@ export const POST = async (request: Request) => {
             },
         });
 
+        console.log("Pelanggan Created:", pelanggan); // Log data pelanggan yang dibuat
+
         return NextResponse.json(pelanggan, { status: 201 });
     } catch (error) {
         console.error("Terjadi kesalahan:", error); // Tambahkan log untuk debugging
         return NextResponse.json({ error: "Terjadi kesalahan server" }, { status: 500 });
     }
 };
+
 export async function GET() {
     try {
-      // Fetch semua tiket
-      const tiket = await prisma.tiket.findMany();
-      return NextResponse.json(tiket);
+        // Fetch semua tiket
+        const tiket = await prisma.tiket.findMany({
+            include: {
+                pelanggan: true, // Include pelanggan data
+                petugas: true, // Include petugas data
+            },
+        });
+        console.log("Data Tiket:", tiket); // Log data tiket yang diambil
+        return NextResponse.json(tiket);
     } catch (error) {
-      console.error(error);
-      return NextResponse.json(
-        { error: 'Gagal mengambil data dari server.' },
-        { status: 500 }
-      );
+        console.error(error);
+        return NextResponse.json(
+            { error: 'Gagal mengambil data dari server.' },
+            { status: 500 }
+        );
     } finally {
-      await prisma.$disconnect();
+        await prisma.$disconnect();
     }
-  }
+}
