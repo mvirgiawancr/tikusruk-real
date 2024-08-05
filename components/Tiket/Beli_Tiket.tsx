@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, SyntheticEvent } from "react";
+import React, { useState, useEffect, SyntheticEvent } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -14,48 +14,64 @@ type Data_bus = {
   jenis_bus: JenisBus;
 };
 
-const BeliTiket = ({ bus }: { bus: Data_bus[] }) => {
+const BeliTiket = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [nama, setNama] = useState("");
   const [noTelepon, setNoTelepon] = useState("");
   const [alamat, setAlamat] = useState("");
-  const [plat_bus, setPlatBus] = useState("");
-  const [kursi, setKursi] = useState("");
+  const [platBus, setPlatBus] = useState("");
+  const [kursi, setKursi] = useState<number | "">("");
+  const [bus, setBus] = useState<Data_bus[]>([]);
   const router = useRouter();
+
+  const fetchBus = async () => {
+    try {
+      const response = await axios.get("/api/bus");
+      setBus(response.data);
+    } catch (error) {
+      console.error("Failed to fetch bus data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchBus();
+  }, []);
 
   const handleModal = () => {
     setIsOpen(!isOpen);
+    if (!isOpen) {
+      fetchBus(); // Refresh bus data when opening the modal
+    }
   };
 
   const handleSubmit = async (e: SyntheticEvent) => {
+    e.preventDefault();
+    const data = {
+      id_petugas: localStorage.getItem("petugasId"),
+      nama: nama,
+      no_telepon: noTelepon,
+      alamat: alamat,
+      plat_bus: platBus,
+      kursi: Number(kursi),
+    };
+    console.log("Submitting Data:", data); // Log data yang dikirim
     try {
-      e.preventDefault();
-      const data = {
-        id_petugas: localStorage.getItem("petugasId"),
-        nama: nama,
-        no_telepon: noTelepon,
-        alamat: alamat,
-        plat_bus: plat_bus, // Kirimkan plat_bus
-        kursi: Number(kursi),
-      };
-      console.log("Submitting Data:", data); // Log data yang dikirim
-      const response = await axios.post("/api/tiket", data);
+      await axios.post("/api/tiket", data);
 
-      if (response.status === 201) {
-        setNama("");
-        setNoTelepon("");
-        setAlamat("");
-        setPlatBus("");
-        setKursi("");
-        Swal.fire({
-          title: "Success!",
-          text: "Tiket Berhasil Ditambahkan",
-          icon: "success",
-          confirmButtonText: "Ok",
-        });
-        router.refresh();
-        setIsOpen(false);
-      }
+      setNama("");
+      setNoTelepon("");
+      setAlamat("");
+      setPlatBus("");
+      setKursi("");
+      Swal.fire({
+        title: "Success!",
+        text: "Data berhasil ditambahkan",
+        icon: "success",
+        confirmButtonText: "Ok",
+      });
+      fetchBus(); // Refresh bus data after adding a new bus
+      router.refresh();
+      setIsOpen(false);
     } catch (error: any) {
       if (error.response && error.response.data && error.response.data.error) {
         Swal.fire({
@@ -82,7 +98,7 @@ const BeliTiket = ({ bus }: { bus: Data_bus[] }) => {
       </button>
       <div className={isOpen ? "modal modal-open" : "modal"}>
         <div className="modal-box">
-          <h3 className="font-bold text-lg">Tambahkan Pelanggan</h3>
+          <h3 className="font-bold text-lg">Tambahkan Pembeli Tiket</h3>
           <form onSubmit={handleSubmit}>
             <div className="form-control w-full">
               <label className="label font-bold">Nama</label>
@@ -114,30 +130,28 @@ const BeliTiket = ({ bus }: { bus: Data_bus[] }) => {
                 placeholder="Alamat"
               />
             </div>
-            <div className="form-control w-1/3">
+            <div className="form-control w-full">
               <label className="label font-bold">Bus</label>
               <select
                 className="select select-bordered"
-                value={plat_bus}
+                value={platBus}
                 onChange={(e) => setPlatBus(e.target.value)}
               >
                 <option value="" disabled>
                   Pilih Bus
                 </option>
-                {bus
-                  .filter((bus) => bus.jenis_bus === JenisBus.Akap)
-                  .map((bus) => (
-                    <option value={bus.plat_bus} key={bus.plat_bus}>
-                      {bus.plat_bus}
-                    </option>
-                  ))}
+                {bus.map((bus) => (
+                  <option value={bus.plat_bus} key={bus.plat_bus}>
+                    {bus.plat_bus}
+                  </option>
+                ))}
               </select>
               <div className="form-control w-full">
                 <label className="label font-bold">No Kursi</label>
                 <input
-                  type="text"
+                  type="number"
                   value={kursi}
-                  onChange={(e) => setKursi(e.target.value)}
+                  onChange={(e) => setKursi(Number(e.target.value))}
                   className="input input-bordered"
                   placeholder="No Kursi"
                 />
