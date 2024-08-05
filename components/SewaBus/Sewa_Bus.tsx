@@ -29,16 +29,18 @@ const SewaBus = ({ bus }: { bus: Data_bus[] }) => {
   };
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
+    const data = {
+      id_petugas: localStorage.getItem("petugasId"),
+      nama: nama,
+      no_telepon: noTelepon,
+      alamat: alamat,
+      plat_bus: idBus,
+      tanggal_sewa: tanggal_sewa,
+      tanggal_kembali: tanggal_kembali,
+    };
+    console.log("Submitting Data:", data); // Log data yang dikirim
     try {
-      await axios.post("/api/sewabus", {
-        id_petugas: localStorage.getItem("petugasId"),
-        nama: nama,
-        no_telepon: noTelepon,
-        alamat: alamat,
-        plat_bus: idBus,
-        tanggal_sewa: tanggal_sewa,
-        tanggal_kembali: tanggal_kembali,
-      });
+      await axios.post("/api/sewabus", data);
 
       setNama("");
       setNoTelepon("");
