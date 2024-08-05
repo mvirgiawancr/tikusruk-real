@@ -1,4 +1,3 @@
-// Data_Tiket.client.tsx
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
@@ -35,6 +34,7 @@ const Data_Tiket: React.FC = () => {
           throw new Error("Network response was not ok");
         }
         const data: Tiket[] = await response.json();
+        console.log("Fetched Data:", data); // Log data yang diterima dari API
         setTiket(data);
       } catch (error) {
         console.error("Failed to fetch:", error);
@@ -70,8 +70,10 @@ const Data_Tiket: React.FC = () => {
               <tr key={index}>
                 <td>{data.id_tiket}</td>
                 <td>{data.id_bus}</td>
-                <td>{data.pelanggan?.nama || "Tidak Diketahui"}</td>
-                <td>{data.petugas?.nama || "Tidak Diketahui"}</td>
+                <td>{data.pelanggan?.nama || "N/A"}</td>{" "}
+                {/* Periksa null dengan opsional chaining */}
+                <td>{data.petugas?.nama || "N/A"}</td>{" "}
+                {/* Periksa null dengan opsional chaining */}
                 <td>{data.kelas}</td>
                 <td>{data.no_kursi}</td>
                 <td>
