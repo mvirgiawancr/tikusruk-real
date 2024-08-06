@@ -1,8 +1,5 @@
-// Data_Bus.client.tsx
 "use client";
 import React, { useState, useEffect } from "react";
-import EditBus from "./KelolaBus/EditBus";
-import HapusBus from "./KelolaBus/HapusBus";
 
 interface Bus {
   id_bus: number;
@@ -43,6 +40,9 @@ const Data_Bus: React.FC = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+  // Filter buses to include only those with jenis_bus equal to "akap"
+  const filteredBus = bus.filter((busItem) => busItem.jenis_bus === "Akap");
+
   return (
     <div className="overflow-x-auto mt-4 px-4">
       <table className="table">
@@ -62,7 +62,7 @@ const Data_Bus: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {bus.map((data) => (
+          {filteredBus.map((data) => (
             <tr key={data.id_bus}>
               <td>{data.id_bus}</td>
               <td>{data.kapasitas_bagasi}</td>
