@@ -34,18 +34,12 @@ export async function POST(request: Request) {
 
     // Validasi input
     if (
-      kapasitas_bagasi === undefined ||
-      jumlah_kursi === undefined ||
       kelas === undefined ||
-      harga_sewa_bus === undefined ||
-      harga_sewa_bagasi === undefined ||
-      harga_tiket === undefined ||
       jenis === undefined ||
-      kota_asal === undefined ||
       kota_tujuan === undefined ||
       plat === undefined
     ) {
-      console.log('Validasi gagal: Semua field harus diisi');
+      console.log('Field Kelas, Jenis Bus, Kota Tujuan, dan Plat Harus Diisi');
       return NextResponse.json(
         { error: 'Semua field harus diisi!' },
         { status: 400 }
