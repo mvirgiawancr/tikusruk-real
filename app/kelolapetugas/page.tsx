@@ -1,4 +1,4 @@
-import Navbar from "@/components/LoginPage/Navbar";
+import Navbar from "@/components/Petugas/NavbarPetugas";
 import React from "react";
 import { PrismaClient } from "@prisma/client";
 import Data_Petugas from "@/components/Petugas/Data_Petugas";
