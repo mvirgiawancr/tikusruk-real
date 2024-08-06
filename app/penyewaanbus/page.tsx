@@ -1,4 +1,4 @@
-import Data_Bus from "@/components/Data_Bus";
+import Data_Bus from "@/components/SewaBus/Data_Bus";
 import Navbar from "@/components/Navbar";
 import SewaBus from "@/components/SewaBus/Sewa_Bus";
 import React from "react";
