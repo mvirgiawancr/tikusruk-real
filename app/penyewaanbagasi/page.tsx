@@ -34,7 +34,7 @@ const page = async () => {
       <Navbar />
       <Data_Bus />
       <div className="flex justify-center mt-14 gap-5">
-        <SewaBagasi />
+        <SewaBagasi bus-{bus} />
         <Link href={"/penyewaanbagasi/hapusbagasi"} className="btn">
           Hapus Bagasi
         </Link>
