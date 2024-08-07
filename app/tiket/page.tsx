@@ -4,6 +4,7 @@ import Beli_Tiket from "@/components/Tiket/Beli_Tiket";
 import React, { useEffect } from "react";
 import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
+import SewaBagasi from "@/components/SewaBagasi/Sewa_Bagasi";
 const prisma = new PrismaClient();
 
 enum JenisBus {
@@ -33,9 +34,9 @@ const page = async () => {
       <Navbar />
       <Data_Bus />
       <div className="flex justify-center mt-14 gap-5">
-        <Beli_Tiket bus={bus} />
-        <Link href={"/tiket/hapustiket"} className="btn">
-          Hapus Tiket
+        <SewaBagasi bus={bus} />
+        <Link href={"/penyewaanbagasi/hapusbagasi"} className="btn">
+          Hapus Bagasi
         </Link>
       </div>
     </div>
